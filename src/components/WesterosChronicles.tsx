@@ -521,31 +521,28 @@ const WesterosChronicles = ({
               <span />
             </button>
 
-            <ul className={`got-nav-links ${mobileNavOpen ? "is-open" : ""}`}>
-              {navItems.map((item) => (
-                <li key={item.label}>
-                  {item.label === "Characters" ? (
-                    <button
-                      type="button"
-                      className="got-nav-button"
-                      onClick={() => {
-                        setShowCharacters((prev) => !prev);
-                        setMobileNavOpen(false);
-                      }}
-                    >
-                      {showCharacters ? "Hide Characters" : "Characters"}
-                    </button>
-                  ) : (
-                    <a
-                      href={item.href}
-                      onClick={() => setMobileNavOpen(false)}
-                    >
-                      {item.label}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
+           <ul className={`got-nav-links ${mobileNavOpen ? "is-open" : ""}`}>
+            {navItems.map((item) => (
+              <li key={item.label}>
+                {item.label === "Characters" ? (
+                  <button
+                    type="button"
+                    className="got-nav-button"
+                    onClick={() => {
+                      setShowCharacters((prev) => !prev)
+                      setMobileNavOpen(false)
+                    }}
+                  >
+                    {showCharacters ? "Characters" : "Characters"}
+                  </button>
+                ) : (
+                  <a href={item.href} onClick={() => setMobileNavOpen(false)}>
+                    {item.label}
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
           </nav>
 
           <div ref={runeBarRef} className="got-rune-bar">
@@ -565,8 +562,29 @@ const WesterosChronicles = ({
             <h1 ref={titleRef} className="got-title" />
             <p ref={bodyRef} className="got-body" />
             <div className="got-cta-row">
-              <button className="got-cta-btn">Begin the Journey</button>
-              <button className="got-cta-ghost">Explore the Realm</button>
+              <button
+                type="button"
+                className="got-cta-btn"
+                onClick={() => {
+                  window.scrollBy({
+                    top: window.innerHeight * 0.85,
+                    behavior: 'smooth',
+                  })
+                }}
+              >
+                Begin the Journey
+              </button>
+              <button
+                type="button"
+                className="got-cta-ghost"
+                onClick={() => {
+                  document
+                    .getElementById('houses')
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }}
+              >
+                Explore the Realm
+              </button>
               <button
                 type="button"
                 className="got-cta-ghost got-audio-toggle"
@@ -629,3 +647,4 @@ const WesterosChronicles = ({
 }
 
 export default WesterosChronicles
+

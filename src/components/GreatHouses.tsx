@@ -451,7 +451,7 @@ const GreatHouses = () => {
   }, [selectedHouse])
 
   return (
-    <section ref={sectionRef} className="section1">
+    <section ref={sectionRef} id="houses" className="section1">
       <div className="section1-bg-texture" />
       <div className="section1-bg-vignette" />
       <header className="section1-header">
