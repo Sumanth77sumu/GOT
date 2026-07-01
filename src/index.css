@@ -1,1 +1,95 @@
 @import "tailwindcss";
+
+/* add the UI/mobile styling below */
+:root {
+  color-scheme: dark;
+  font-family: Inter, system-ui, sans-serif;
+  background: #0f172a;
+}
+
+html, body, #root {
+  min-height: 100vh;
+  margin: 0;
+  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.12), transparent 35%),
+              linear-gradient(180deg, #020617 0%, #0f172a 100%);
+  color: #e2e8f0;
+}
+
+body {
+  padding: 0.75rem;
+}
+
+main, .app, .container {
+  width: min(100%, 1024px);
+  margin: 0 auto;
+  padding: 0 0.75rem;
+}
+
+nav,
+nav ul,
+.nav-list,
+.menu-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+nav li {
+  width: 100%;
+}
+
+nav a,
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 0.85rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f8fafc;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+nav a:hover,
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+nav .hidden,
+.nav-list.hidden,
+.menu-list.hidden {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+@media (min-width: 768px) {
+  body {
+    padding: 1.5rem;
+  }
+
+  nav,
+  nav ul,
+  .nav-list,
+  .menu-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem;
+  }
+
+  nav li {
+    width: auto;
+  }
+
+  nav a,
+  .nav-link {
+    width: auto;
+  }
+}
