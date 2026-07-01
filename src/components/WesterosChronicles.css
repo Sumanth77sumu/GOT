@@ -308,7 +308,18 @@ body {
   writing-mode: vertical-rl;
   text-orientation: mixed;
 }
+.got-nav-button {
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font: inherit;
+    padding: 0;
+}
 
+.got-nav-button:hover {
+    color: #c9a84c;
+}
 .got-vert-line {
   width: 1px;
   height: 80px;

@@ -98,7 +98,15 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
 const invlerp = (a: number, b: number, v: number) => clamp((v - a) / (b - a), 0, 1)
 
-const WesterosChronicles = () => {
+type Props = {
+    showCharacters: boolean;
+    setShowCharacters: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+const WesterosChronicles = ({
+    showCharacters,
+    setShowCharacters,
+}: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const stickyRef = useRef<HTMLDivElement | null>(null)
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -500,13 +508,23 @@ const WesterosChronicles = () => {
           <nav className="got-nav">
             <div className="got-nav-logo">Game of Thrones</div>
 
-            <ul className="got-nav-links">
-              {navItems.map((item) => (
-                <li key={item.label}>
+           <ul className="got-nav-links">
+            {navItems.map((item) => (
+              <li key={item.label}>
+                {item.label === "Characters" ? (
+                  <button
+                    type="button"
+                    className="got-nav-button"
+                    onClick={() => setShowCharacters((prev) => !prev)}
+                  >
+                    {showCharacters ? "Hide Characters" : "Characters"}
+                  </button>
+                ) : (
                   <a href={item.href}>{item.label}</a>
-                </li>
-              ))}
-            </ul>
+                )}
+              </li>
+            ))}
+          </ul>
           </nav>
 
           <div ref={runeBarRef} className="got-rune-bar">
