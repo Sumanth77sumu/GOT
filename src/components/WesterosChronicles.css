@@ -138,6 +138,41 @@ body {
   color: var(--gold-light);
 }
 
+/* ── Mobile nav toggle (hamburger) ── */
+.got-nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  cursor: pointer;
+  z-index: 21;
+}
+
+.got-nav-toggle span {
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: var(--gold);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.got-nav-toggle.is-open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.got-nav-toggle.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.got-nav-toggle.is-open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
 /* ── Decorative divider ── */
 .got-divider {
   display: flex;
@@ -519,13 +554,87 @@ body {
 }
 
 /* ── Responsive ── */
+
+/* Use dynamic viewport height so iOS Safari's collapsing toolbar
+   doesn't clip the hero on phones (falls back to 100vh where unsupported). */
+.got-sticky {
+  height: 100vh;
+  height: 100dvh;
+}
+
 @media (max-width: 768px) {
-  .got-content        { padding: 0 28px 80px; }
-  .got-nav            { padding: 20px 28px; }
-  .got-nav-links      { display: none; }
-  .got-right-panel    { right: 20px; }
+  .got-content        { padding: 0 24px 72px; }
+  .got-nav            { padding: 18px 20px; }
+  .got-nav-toggle     { display: flex; }
+  .got-right-panel    { right: 16px; }
   .got-scroll-hint    { display: none; }
-  .got-rune-bar       { left: 28px; right: 28px; }
+  .got-rune-bar       { left: 20px; right: 20px; top: 72px; }
   .got-corner         { display: none; }
   .got-title          { font-size: 28px; }
+  .got-cta-row        { flex-wrap: wrap; gap: 14px; }
+
+  /* Nav links collapse into a dropdown panel toggled by the hamburger */
+  .got-nav-links {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 20px;
+    left: 20px;
+    z-index: 20;
+    flex-direction: column;
+    gap: 0;
+    background: rgba(6, 5, 3, 0.94);
+    border: 1px solid rgba(201, 168, 76, 0.3);
+    backdrop-filter: blur(6px);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.35s ease, opacity 0.25s ease;
+    pointer-events: none;
+  }
+
+  .got-nav-links.is-open {
+    max-height: 320px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .got-nav-links li {
+    width: 100%;
+    border-top: 1px solid rgba(201, 168, 76, 0.15);
+  }
+
+  .got-nav-links li:first-child {
+    border-top: none;
+  }
+
+  .got-nav-links li a,
+  .got-nav-links li .got-nav-button {
+    display: block;
+    width: 100%;
+    padding: 16px 20px;
+    text-align: left;
+  }
+}
+
+/* Short/landscape phones (e.g. iPhone rotated): trim vertical chrome
+   so the nav, hero copy and CTAs all fit without overlapping. */
+@media (max-width: 1024px) and (orientation: landscape) and (max-height: 500px) {
+  .got-nav            { padding: 12px 20px; }
+  .got-rune-bar       { display: none; }
+  .got-content        { padding: 0 20px 24px; max-width: 100%; }
+  .got-sigil          { font-size: 18px; margin-bottom: 8px; }
+  .got-divider        { margin-bottom: 8px; }
+  .got-subtitle       { margin-bottom: 8px; }
+  .got-title          { font-size: 22px; margin-bottom: 10px; }
+  .got-body           { display: none; }
+  .got-cta-row        { margin-top: 14px; gap: 10px; }
+  .got-cta-btn,
+  .got-cta-ghost      { padding: 8px 18px; font-size: 9px; }
+  .got-right-panel    { display: none; }
+  .got-scroll-hint    { display: none; }
+
+  .got-nav-links {
+    max-height: 70vh;
+    overflow-y: auto;
+  }
 }

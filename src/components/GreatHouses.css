@@ -658,3 +658,33 @@
     min-height: 390px;
   }
 }
+
+/* Short/landscape phones: the fixed min-heights above are taller than the
+   viewport itself, clipping the house name at the bottom of the card. */
+@media (max-width: 1024px) and (orientation: landscape) and (max-height: 500px) {
+  .section1 {
+    padding: 32px 20px 48px;
+  }
+  .houses-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .house-card {
+    min-height: 220px;
+    padding: 20px 16px 22px;
+  }
+  .house-sigil-wrap {
+    top: 16px;
+    width: 76px;
+    height: 76px;
+  }
+  .house-content {
+    margin-top: 88px;
+  }
+  .members-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .member-card {
+    min-height: 220px;
+  }
+}

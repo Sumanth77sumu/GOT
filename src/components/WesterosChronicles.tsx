@@ -122,6 +122,7 @@ const WesterosChronicles = ({
   const chapterTimelineRef = useRef<gsap.core.Timeline | null>(null)
 
   const [activeChapter, setActiveChapter] = useState(0)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [videoReady, setVideoReady] = useState(false)
   const [videoSrc, setVideoSrc] = useState('/video/one.mp4')
   const [audioSrc] = useState("/audio/got-theme.mp3")
@@ -508,23 +509,43 @@ const WesterosChronicles = ({
           <nav className="got-nav">
             <div className="got-nav-logo">Game of Thrones</div>
 
-           <ul className="got-nav-links">
-            {navItems.map((item) => (
-              <li key={item.label}>
-                {item.label === "Characters" ? (
-                  <button
-                    type="button"
-                    className="got-nav-button"
-                    onClick={() => setShowCharacters((prev) => !prev)}
-                  >
-                    {showCharacters ? "Hide Characters" : "Characters"}
-                  </button>
-                ) : (
-                  <a href={item.href}>{item.label}</a>
-                )}
-              </li>
-            ))}
-          </ul>
+            <button
+              type="button"
+              className={`got-nav-toggle ${mobileNavOpen ? "is-open" : ""}`}
+              aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileNavOpen}
+              onClick={() => setMobileNavOpen((prev) => !prev)}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+
+            <ul className={`got-nav-links ${mobileNavOpen ? "is-open" : ""}`}>
+              {navItems.map((item) => (
+                <li key={item.label}>
+                  {item.label === "Characters" ? (
+                    <button
+                      type="button"
+                      className="got-nav-button"
+                      onClick={() => {
+                        setShowCharacters((prev) => !prev);
+                        setMobileNavOpen(false);
+                      }}
+                    >
+                      {showCharacters ? "Hide Characters" : "Characters"}
+                    </button>
+                  ) : (
+                    <a
+                      href={item.href}
+                      onClick={() => setMobileNavOpen(false)}
+                    >
+                      {item.label}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
           </nav>
 
           <div ref={runeBarRef} className="got-rune-bar">
