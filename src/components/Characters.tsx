@@ -342,9 +342,9 @@ export default function Characters() {
   return (
     <section
       id="characters"
-      className="relative min-h-screen bg-gradient-to-b from-black via-[#0b0b0b] to-black px-6 py-24 text-white"
+      className="relative min-h-screen w-full overflow-x-hidden bg-gradient-to-b from-black via-[#0b0b0b] to-black px-6 py-24 text-white sm:px-10 lg:px-16 2xl:px-24"
     >
-      <div className="mx-auto max-w-7xl 2xl:max-w-[1600px]">
+      <div className="mx-auto w-full max-w-none">
 
         {/* Heading */}
         <div className="mb-14 text-center">
@@ -359,69 +359,66 @@ export default function Characters() {
           <div className="mx-auto mt-6 h-[2px] w-40 bg-gradient-to-r from-transparent via-yellow-500 to-transparent" />
         </div>
 
-        {/* Toolbar: search, filters, sort + counter */}
-        <div className="mb-14 flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-          {/* Search */}
-          <div className="relative w-full xl:w-auto xl:min-w-[280px]">
-            <Search
-              size={20}
-              className="absolute left-5 top-1/2 -translate-y-1/2 text-yellow-500"
-            />
+        {/* Toolbar: search (full width), filters (full width), sort + counter */}
+        <div className="mb-8 grid grid-cols-[380px_1fr_180px] items-center gap-4">
 
-            <input
-              type="text"
-              placeholder="Search a hero, house, title or actor..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-full border border-yellow-600/30 bg-black/40 py-3 pl-14 pr-5 backdrop-blur-lg outline-none transition focus:border-yellow-500"
-            />
-          </div>
+            {/* Search */}
+            <div className="relative">
+              <Search
+                size={18}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-yellow-500"
+              />
 
-          {/* Filters */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            {houses.map((house) => (
-              <button
-                key={house}
-                onClick={() => setSelectedHouse(house)}
-                className={`rounded-full border px-5 py-2 transition-all duration-300 ${
-                  selectedHouse === house
-                    ? "border-yellow-500 bg-yellow-500 text-black"
-                    : "border-white/10 bg-white/5 hover:border-yellow-500 hover:bg-yellow-500/10"
-                }`}
-              >
-                <span className="mr-2">{houseIcons[house]}</span>
-                {house}
-                <span className="ml-1.5 opacity-70">({houseCounts[house]})</span>
-              </button>
-            ))}
-          </div>
+              <input
+                type="text"
+                placeholder="Search characters..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="h-10 w-full rounded-full border border-yellow-600/30 bg-black/40 pl-11 pr-4 text-sm text-white outline-none transition focus:border-yellow-500"
+              />
+            </div>
 
-          {/* Sort + counter */}
-          <div className="flex flex-col items-center gap-2 xl:items-end">
-            <p className="whitespace-nowrap text-sm text-gray-400">
-              Showing{" "}
-              <span className="font-semibold text-yellow-400">
-                {filteredCharacters.length}
-              </span>{" "}
-              of {characters.length} Characters
-            </p>
+            {/* Filters */}
+            <div className="flex items-center justify-end gap-2">
+              {houses.map((house) => (
+                <button
+                  key={house}
+                  onClick={() => setSelectedHouse(house)}
+                  className={`h-10 whitespace-nowrap rounded-full border px-4 text-sm transition ${
+                    selectedHouse === house
+                      ? "border-yellow-500 bg-yellow-500 text-black"
+                      : "border-white/10 bg-white/5 text-white hover:border-yellow-500 hover:bg-yellow-500/10"
+                  }`}
+                >
+                  <span className="mr-1">{houseIcons[house]}</span>
+                  {house}
+                  <span className="ml-1 opacity-70">
+                    ({houseCounts[house]})
+                  </span>
+                </button>
+              ))}
+            </div>
 
-            <label className="flex items-center gap-2 text-sm text-gray-400">
-              Sort by
+            {/* Sort */}
+            <div className="flex justify-end">
               <select
                 value={sortKey}
                 onChange={(e) => setSortKey(e.target.value as SortKey)}
-                className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm text-white outline-none transition focus:border-yellow-500"
+                className="h-10 w-full rounded-full border border-white/10 bg-white/5 px-4 text-sm text-white outline-none focus:border-yellow-500"
               >
                 {sortOptions.map((option) => (
-                  <option key={option.key} value={option.key} className="bg-black">
+                  <option
+                    key={option.key}
+                    value={option.key}
+                    className="bg-[#111]"
+                  >
                     {option.label}
                   </option>
                 ))}
               </select>
-            </label>
+            </div>
+
           </div>
-        </div>
 
         {/* Cards */}
         <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-10">
