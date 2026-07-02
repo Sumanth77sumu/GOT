@@ -101,11 +101,23 @@ const invlerp = (a: number, b: number, v: number) => clamp((v - a) / (b - a), 0,
 type Props = {
     showCharacters: boolean;
     setShowCharacters: React.Dispatch<React.SetStateAction<boolean>>;
+    showHouses: boolean;
+    setShowHouses: React.Dispatch<React.SetStateAction<boolean>>;
+    showWorld: boolean;
+    setShowWorld: React.Dispatch<React.SetStateAction<boolean>>;
+    showHistory: boolean;
+    setShowHistory: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const WesterosChronicles = ({
     showCharacters,
     setShowCharacters,
+    showHouses,
+    setShowHouses,
+    showWorld,
+    setShowWorld,
+    showHistory,
+    setShowHistory,
 }: Props) => {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const stickyRef = useRef<HTMLDivElement | null>(null)
@@ -467,6 +479,110 @@ const WesterosChronicles = ({
         </div>
       </div>
 
+      <nav className="got-nav">
+        <div className="got-nav-logo">Game of Thrones</div>
+
+        <button
+          type="button"
+          className={`got-nav-toggle ${mobileNavOpen ? "is-open" : ""}`}
+          aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
+          aria-expanded={mobileNavOpen}
+          onClick={() => setMobileNavOpen((prev) => !prev)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+
+        <ul className={`got-nav-links ${mobileNavOpen ? "is-open" : ""}`}>
+          {navItems.map((item) => (
+            <li key={item.label}>
+              {item.label === "Characters" ? (
+                <button
+                  type="button"
+                  className="got-nav-button"
+                  onClick={() => {
+                    setShowCharacters((prev) => {
+                      const next = !prev
+                      if (next) {
+                        window.requestAnimationFrame(() => {
+                          document.getElementById('characters')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        })
+                      }
+                      return next
+                    })
+                    setMobileNavOpen(false)
+                  }}
+                >
+                  {showCharacters ? "Hide Characters" : "Characters"}
+                </button>
+              ) : item.label === "Houses" ? (
+                <button
+                  type="button"
+                  className="got-nav-button"
+                  onClick={() => {
+                    setShowHouses((prev) => {
+                      const next = !prev
+                      if (next) {
+                        window.requestAnimationFrame(() => {
+                          document.getElementById('houses')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        })
+                      }
+                      return next
+                    })
+                    setMobileNavOpen(false)
+                  }}
+                >
+                  {showHouses ? "Hide Houses" : "Houses"}
+                </button>
+              ) : item.label === "The World" ? (
+                <button
+                  type="button"
+                  className="got-nav-button"
+                  onClick={() => {
+                    setShowWorld((prev) => {
+                      const next = !prev
+                      if (next) {
+                        window.requestAnimationFrame(() => {
+                          document.getElementById('world')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        })
+                      }
+                      return next
+                    })
+                    setMobileNavOpen(false)
+                  }}
+                >
+                  {showWorld ? "Hide The World" : "The World"}
+                </button>
+              ) : item.label === "History" ? (
+                <button
+                  type="button"
+                  className="got-nav-button"
+                  onClick={() => {
+                    setShowHistory((prev) => {
+                      const next = !prev
+                      if (next) {
+                        window.requestAnimationFrame(() => {
+                          document.getElementById('history')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                        })
+                      }
+                      return next
+                    })
+                    setMobileNavOpen(false)
+                  }}
+                >
+                  {showHistory ? "Hide History" : "History"}
+                </button>
+              ) : (
+                <a href={item.href} onClick={() => setMobileNavOpen(false)}>
+                  {item.label}
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+      </nav>
+
       <div
         ref={containerRef}
         className="got-container"
@@ -505,46 +621,6 @@ const WesterosChronicles = ({
             </div>
           ))}
 
-
-          <nav className="got-nav">
-            <div className="got-nav-logo">Game of Thrones</div>
-
-            <button
-              type="button"
-              className={`got-nav-toggle ${mobileNavOpen ? "is-open" : ""}`}
-              aria-label={mobileNavOpen ? "Close menu" : "Open menu"}
-              aria-expanded={mobileNavOpen}
-              onClick={() => setMobileNavOpen((prev) => !prev)}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
-
-           <ul className={`got-nav-links ${mobileNavOpen ? "is-open" : ""}`}>
-            {navItems.map((item) => (
-              <li key={item.label}>
-                {item.label === "Characters" ? (
-                  <button
-                    type="button"
-                    className="got-nav-button"
-                    onClick={() => {
-                      setShowCharacters((prev) => !prev)
-                      setMobileNavOpen(false)
-                    }}
-                  >
-                    {showCharacters ? "Characters" : "Characters"}
-                  </button>
-                ) : (
-                  <a href={item.href} onClick={() => setMobileNavOpen(false)}>
-                    {item.label}
-                  </a>
-                )}
-              </li>
-            ))}
-          </ul>
-          </nav>
-
           <div ref={runeBarRef} className="got-rune-bar">
             {Array.from({ length: 80 }).map((_, i) => (
               <div key={i} className="rune-tick" />
@@ -578,9 +654,10 @@ const WesterosChronicles = ({
                 type="button"
                 className="got-cta-ghost"
                 onClick={() => {
-                  document
-                    .getElementById('houses')
-                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  setShowHouses(true)
+                  window.requestAnimationFrame(() => {
+                    document.getElementById('houses')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  })
                 }}
               >
                 Explore the Realm
@@ -647,4 +724,3 @@ const WesterosChronicles = ({
 }
 
 export default WesterosChronicles
-

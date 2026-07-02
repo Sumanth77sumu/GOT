@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&display=swap');
+
+/* ─── Section wrapper (full screen) ──────────────────────────────────────── */
+.history-section {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  background: #000;
+  overflow: hidden;
+}
+
+/* ─── 3D tilt video, full-bleed ──────────────────────────────────────────── */
+.history-video-perspective {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  perspective: 1400px;
+}
+
+.history-video-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.history-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
+}
+
+/* Cursor-follow glare, the "trending" tilt-card shine */
+.history-video-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: radial-gradient(
+    circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(255, 255, 255, 0.22),
+    rgba(255, 255, 255, 0.06) 28%,
+    transparent 55%
+  );
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.history-video-wrap.is-hovering .history-video-glare {
+  opacity: 1;
+}
+
+/* ─── Readability overlay + header ───────────────────────────────────────── */
+.history-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.15) 45%, rgba(0,0,0,0.5) 100%);
+  pointer-events: none;
+}
+
+.history-header {
+  position: absolute;
+  top: 120px;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  text-align: center;
+  pointer-events: none;
+}
+
+.history-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: #c9a84c;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin-bottom: 18px;
+}
+
+.history-ornament {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.history-ornament-line {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #7a6130);
+}
+
+.history-ornament-line:last-child {
+  background: linear-gradient(to left, transparent, #7a6130);
+}
+
+.history-ornament-rune {
+  color: #c9a84c;
+  font-size: 12px;
+}
+
+.history-title {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 700;
+  color: #f5e6c8;
+  line-height: 1.15;
+  text-shadow: 0 2px 30px rgba(0,0,0,0.8);
+}
+
+.history-title em {
+  font-style: normal;
+  color: #c9a84c;
+}
+
+/* ─── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .history-header { top: 88px; }
+}

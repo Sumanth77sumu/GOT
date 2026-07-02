@@ -280,7 +280,6 @@ const HouseCard = ({ house, index, selected, onSelect }: HouseCardProps) => {
   const cardRef = useRef<HTMLDivElement | null>(null)
   const sigilRef = useRef<HTMLDivElement | null>(null)
   const [visible, setVisible] = useState(false)
-  const [hovered, setHovered] = useState(false)
   const [imgError, setImgError] = useState(false)
 
   useEffect(() => {
@@ -309,7 +308,6 @@ const HouseCard = ({ house, index, selected, onSelect }: HouseCardProps) => {
 
   const handleMouseLeave = () => {
     if (sigilRef.current) sigilRef.current.style.transform = ''
-    setHovered(false)
   }
 
   return (
@@ -324,7 +322,6 @@ const HouseCard = ({ house, index, selected, onSelect }: HouseCardProps) => {
       role="button"
       tabIndex={0}
       aria-pressed={selected}
-      onMouseEnter={() => setHovered(true)}
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
       onClick={() => onSelect(house)}
@@ -353,7 +350,7 @@ const HouseCard = ({ house, index, selected, onSelect }: HouseCardProps) => {
         )}
         <div className="sigil-ring" />
       </div>
-      <div className={`house-content ${hovered ? 'content-hidden' : ''}`}>
+      <div className={`house-content ${selected ? 'content-hidden' : ''}`}>
         <p className="house-region">{house.region}</p>
         <div className="house-divider">
           <span className="divider-line" />
@@ -364,7 +361,7 @@ const HouseCard = ({ house, index, selected, onSelect }: HouseCardProps) => {
         <p className="house-seat">{house.seat}</p>
         <p className="house-sigil-label">{house.sigil}</p>
       </div>
-      <div className={`house-hover-content ${hovered ? 'hover-visible' : ''}`}>
+      <div className={`house-hover-content ${selected ? 'hover-visible' : ''}`}>
         <p className="hover-words">{house.words}</p>
         <div className="house-divider hover-divider">
           <span className="divider-line" />
