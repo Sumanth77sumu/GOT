@@ -22,6 +22,7 @@
   position: relative;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   transition: transform 0.35s cubic-bezier(0.22,1,0.36,1);
   transform-style: preserve-3d;
   will-change: transform;
@@ -29,10 +30,19 @@
 
 .history-video {
   display: block;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100vh;
+  height: 100vw;
   object-fit: cover;
   background: #000;
+  /* history.mp4 carries a rotation flag that Chrome's <video> element
+     honors on decode (but editors/previewers ignore), so playback comes
+     out sideways even though the source frames are landscape. Counter-
+     rotate the element to compensate; flip the sign to 90deg if this
+     ends up backwards. */
+  transform: translate(-50%, -50%) rotate(-90deg);
 }
 
 /* Cursor-follow glare, the "trending" tilt-card shine */

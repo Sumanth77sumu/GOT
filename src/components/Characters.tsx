@@ -104,12 +104,12 @@ function CharacterModal({
             ref={tiltRef}
             onMouseMove={handleTiltMove}
             onMouseLeave={handleTiltLeave}
-            className="relative h-64 w-full overflow-hidden transition-transform duration-300 ease-out will-change-transform sm:h-[380px] lg:h-[440px]"
+            className="relative h-64 w-full overflow-hidden bg-black transition-transform duration-300 ease-out will-change-transform sm:h-[380px] lg:h-[440px]"
           >
             <img
               src={character.image}
               alt={character.name}
-              className="h-full w-full object-cover object-top"
+              className="h-full w-full object-contain object-center"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
@@ -360,10 +360,10 @@ export default function Characters() {
         </div>
 
         {/* Toolbar: search (full width), filters (full width), sort + counter */}
-        <div className="mb-8 grid grid-cols-[380px_1fr_180px] items-center gap-4">
+        <div className="mb-[25px] grid grid-cols-[380px_1fr_180px] items-center gap-4" style={{ marginBottom: "25px" }}>
 
             {/* Search */}
-            <div className="relative">
+            <div className="relative mb-[25px]">
               <Search
                 size={18}
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-yellow-500"
