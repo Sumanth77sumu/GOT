@@ -32,7 +32,18 @@ export default function LocationHero({ location }: { location: LocationData }) {
 
   return (
     <div
-      className="relative h-[46vh] w-full overflow-hidden rounded-lg border border-yellow-900/25 bg-black sm:h-[56vh] lg:h-[68vh]"
+      className="relative w-full overflow-hidden rounded-lg border border-yellow-900/25 bg-black"
+      style={{
+        // Size the box by the hero photo's own aspect ratio (matches the
+        // 1128x844 crop used for every location) instead of a fixed
+        // viewport-height box, so object-cover never has to zoom into /
+        // crop out parts of the image to fill a mismatched shape. The
+        // max-height is just a safety cap for very wide/short viewports —
+        // object-contain below means it letterboxes rather than crops if
+        // that cap ever actually binds.
+        aspectRatio: "1128 / 844",
+        maxHeight: "72vh",
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -44,7 +55,7 @@ export default function LocationHero({ location }: { location: LocationData }) {
           <img
             src={location.heroImage}
             alt={`${location.name} — ${location.region}`}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain"
           />
         </div>
       ) : (
