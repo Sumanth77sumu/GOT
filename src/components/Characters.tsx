@@ -2,7 +2,14 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { Search, Swords, Crown, ArrowRight, X } from "lucide-react";
 import { characters, type Character } from "../data/characters";
 
-const houses = ["All", "Stark", "Lannister", "Targaryen", "Clegane"];
+// Required houses always show up in the filter, plus any other house that
+// shows up in the character data (so new houses don't need a code change).
+const REQUIRED_HOUSES = ["Stark", "Lannister", "Targaryen", "Clegane"];
+const dynamicHouses = Array.from(new Set(characters.map((c) => c.house)));
+const houses = [
+  "All",
+  ...Array.from(new Set([...REQUIRED_HOUSES, ...dynamicHouses])),
+];
 
 const houseIcons: Record<string, string> = {
   All: "⚔",
@@ -30,13 +37,43 @@ const houseCounts: Record<string, number> = houses.reduce(
   {} as Record<string, number>,
 );
 
-type SortKey = "name" | "house" | "status";
+/**
+ * Keeps the skeleton up until the image really is painted, and copes with
+ * images that finish loading before React attaches the onLoad handler
+ * (browser cache), which otherwise leaves the placeholder up forever.
+ */
+function useImageStatus() {
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const [status, setStatus] = useState<"loading" | "loaded" | "error">(
+    "loading",
+  );
 
-const sortOptions: { key: SortKey; label: string }[] = [
-  { key: "name", label: "Name (A–Z)" },
-  { key: "house", label: "House" },
-  { key: "status", label: "Status" },
-];
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    if (img.complete) {
+      setStatus(img.naturalWidth > 0 ? "loaded" : "error");
+    }
+  }, []);
+
+  return {
+    imgRef,
+    status,
+    onLoad: () => setStatus("loaded"),
+    onError: () => setStatus("error"),
+  };
+}
+
+function ImageFallback({ name }: { name: string }) {
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#141414] text-yellow-600/70">
+      <Crown size={28} />
+      <span className="px-4 text-center text-xs tracking-widest uppercase">
+        {name}
+      </span>
+    </div>
+  );
+}
 
 function CharacterModal({
   character,
@@ -46,6 +83,7 @@ function CharacterModal({
   onClose: () => void;
 }) {
   const tiltRef = useRef<HTMLDivElement | null>(null);
+  const portrait = useImageStatus();
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -106,15 +144,28 @@ function CharacterModal({
             onMouseLeave={handleTiltLeave}
             className="relative h-64 w-full overflow-hidden bg-black transition-transform duration-300 ease-out will-change-transform sm:h-[380px] lg:h-[440px]"
           >
-            <img
-              src={character.image}
-              alt={character.name}
-              className="h-full w-full object-contain object-center"
-            />
+            {portrait.status === "loading" && (
+              <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-[#141414] via-[#1d1d1d] to-[#141414]" />
+            )}
+            {portrait.status === "error" ? (
+              <ImageFallback name={character.name} />
+            ) : (
+              <img
+                ref={portrait.imgRef}
+                src={character.image}
+                alt={character.name}
+                decoding="async"
+                onLoad={portrait.onLoad}
+                onError={portrait.onError}
+                className={`h-full w-full object-contain object-center transition-opacity duration-500 ${
+                  portrait.status === "loaded" ? "opacity-100" : "opacity-0"
+                }`}
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
             <span
-              className={`absolute right-4 top-4 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold backdrop-blur-sm ${
+              className={`absolute left-4 top-4 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold backdrop-blur-sm ${
                 character.status === "Alive"
                   ? "bg-green-950/70 text-green-400"
                   : "bg-red-950/70 text-red-400"
@@ -189,23 +240,37 @@ function CharacterCard({
 }) {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
+  const portrait = useImageStatus();
 
   useEffect(() => {
     const el = cardRef.current;
     if (!el) return;
 
+    if (typeof IntersectionObserver === "undefined") {
+      setVisible(true);
+      return;
+    }
+
+    let timer: ReturnType<typeof setTimeout>;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => setVisible(true), (index % 6) * 100);
           observer.disconnect();
+          timer = setTimeout(() => setVisible(true), (index % 6) * 100);
         }
       },
-      { threshold: 0.15 },
+      // Reveal as soon as any sliver of the card approaches the viewport.
+      // A threshold meant cards taller than the viewport never revealed.
+      { threshold: 0, rootMargin: "200px 0px" },
     );
 
     observer.observe(el);
-    return () => observer.disconnect();
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, [index]);
 
   return (
@@ -225,18 +290,33 @@ function CharacterCard({
       }`}
     >
       {/* Image */}
-      <div className="relative overflow-hidden">
-        <img
-          src={character.image}
-          alt={character.name}
-          className="h-72 w-full object-cover object-top transition duration-700 group-hover:scale-105 sm:h-80 lg:h-[420px]"
-        />
+      <div className="relative h-72 overflow-hidden bg-[#141414] sm:h-80 lg:h-[420px]">
+        {portrait.status === "loading" && (
+          <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-[#141414] via-[#1d1d1d] to-[#141414]" />
+        )}
+
+        {portrait.status === "error" ? (
+          <ImageFallback name={character.name} />
+        ) : (
+          <img
+            ref={portrait.imgRef}
+            src={character.image}
+            alt={character.name}
+            loading={index < 4 ? "eager" : "lazy"}
+            decoding="async"
+            onLoad={portrait.onLoad}
+            onError={portrait.onError}
+            className={`h-full w-full object-cover object-top transition duration-700 group-hover:scale-105 ${
+              portrait.status === "loaded" ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        )}
 
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
         {/* Status */}
         <span
-          className={`absolute right-4 top-4 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold backdrop-blur-sm ${
+          className={`absolute left-4 top-4 flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold backdrop-blur-sm ${
             character.status === "Alive"
               ? "bg-green-950/70 text-green-400"
               : "bg-red-950/70 text-red-400"
@@ -313,7 +393,6 @@ function CharacterCard({
 export default function Characters() {
   const [search, setSearch] = useState("");
   const [selectedHouse, setSelectedHouse] = useState("All");
-  const [sortKey, setSortKey] = useState<SortKey>("name");
   const [selectedCharacter, setSelectedCharacter] = useState<Character | null>(null);
 
   const filteredCharacters = useMemo(() => {
@@ -332,12 +411,8 @@ export default function Characters() {
       return matchesSearch && matchesHouse;
     });
 
-    return [...filtered].sort((a, b) => {
-      if (sortKey === "name") return a.name.localeCompare(b.name);
-      if (sortKey === "house") return a.house.localeCompare(b.house);
-      return a.status.localeCompare(b.status);
-    });
-  }, [search, selectedHouse, sortKey]);
+    return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+  }, [search, selectedHouse]);
 
   return (
     <section
@@ -359,14 +434,31 @@ export default function Characters() {
           <div className="mx-auto mt-6 h-[2px] w-40 bg-gradient-to-r from-transparent via-yellow-500 to-transparent" />
         </div>
 
-        {/* Toolbar: search (full width), filters (full width), sort + counter */}
-        <div className="mb-[25px] grid grid-cols-[380px_1fr_180px] items-center gap-4" style={{ marginBottom: "25px" }}>
+        {/* Toolbar: house filter + search, aligned to the right, wraps on small screens */}
+        <div className="mb-10 flex flex-wrap items-center justify-end gap-3">
+
+            {/* House / family filter */}
+            <div className="w-full sm:w-56">
+              <select
+                value={selectedHouse}
+                onChange={(e) => setSelectedHouse(e.target.value)}
+                aria-label="Filter by house"
+                className="h-11 w-full rounded-full border border-white/10 bg-white/[0.03] px-4 text-sm text-white outline-none transition focus:border-yellow-500/60"
+              >
+                {houses.map((house) => (
+                  <option key={house} value={house} className="bg-[#111]">
+                    {houseIcons[house] ? `${houseIcons[house]} ` : ""}
+                    {house} ({houseCounts[house]})
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Search */}
-            <div className="relative mb-[25px]">
+            <div className="relative w-full sm:w-72">
               <Search
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-yellow-500"
+                size={16}
+                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-yellow-500/70"
               />
 
               <input
@@ -374,48 +466,11 @@ export default function Characters() {
                 placeholder="Search characters..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="h-10 w-full rounded-full border border-yellow-600/30 bg-black/40 pl-11 pr-4 text-sm text-white outline-none transition focus:border-yellow-500"
+                // Keep text clear of the absolutely positioned search icon,
+                // including if a global input style overrides utility classes.
+                style={{ paddingLeft: "3rem" }}
+                className="h-11 w-full rounded-full border border-white/10 bg-white/[0.03] pl-11 pr-4 text-sm text-white placeholder:text-gray-500 outline-none transition focus:border-yellow-500/60 focus:bg-white/[0.06] focus:ring-4 focus:ring-yellow-500/10"
               />
-            </div>
-
-            {/* Filters */}
-            <div className="flex items-center justify-end gap-2">
-              {houses.map((house) => (
-                <button
-                  key={house}
-                  onClick={() => setSelectedHouse(house)}
-                  className={`h-10 whitespace-nowrap rounded-full border px-4 text-sm transition ${
-                    selectedHouse === house
-                      ? "border-yellow-500 bg-yellow-500 text-black"
-                      : "border-white/10 bg-white/5 text-white hover:border-yellow-500 hover:bg-yellow-500/10"
-                  }`}
-                >
-                  <span className="mr-1">{houseIcons[house]}</span>
-                  {house}
-                  <span className="ml-1 opacity-70">
-                    ({houseCounts[house]})
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* Sort */}
-            <div className="flex justify-end">
-              <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as SortKey)}
-                className="h-10 w-full rounded-full border border-white/10 bg-white/5 px-4 text-sm text-white outline-none focus:border-yellow-500"
-              >
-                {sortOptions.map((option) => (
-                  <option
-                    key={option.key}
-                    value={option.key}
-                    className="bg-[#111]"
-                  >
-                    {option.label}
-                  </option>
-                ))}
-              </select>
             </div>
 
           </div>

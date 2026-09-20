@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { lenis } from '../lib/lenis'
 import './WesterosChronicles.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -145,11 +146,16 @@ const WesterosChronicles = ({
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const hasUserInteracted = useRef(false)
 
-  const navItems = [
-    { label: "The World", href: "#world" },
-    { label: "Characters", href: "#characters" },
-    { label: "Houses", href: "#houses" },
-    { label: "History", href: "#history" },
+  const navItems: {
+    label: string
+    id: string
+    active: boolean
+    setActive: React.Dispatch<React.SetStateAction<boolean>>
+  }[] = [
+    { label: "The World", id: "world", active: showWorld, setActive: setShowWorld },
+    { label: "Characters", id: "characters", active: showCharacters, setActive: setShowCharacters },
+    { label: "Houses", id: "houses", active: showHouses, setActive: setShowHouses },
+    { label: "History", id: "history", active: showHistory, setActive: setShowHistory },
   ];
 
   useEffect(() => {
@@ -497,87 +503,33 @@ const WesterosChronicles = ({
         <ul className={`got-nav-links ${mobileNavOpen ? "is-open" : ""}`}>
           {navItems.map((item) => (
             <li key={item.label}>
-              {item.label === "Characters" ? (
-                <button
-                  type="button"
-                  className="got-nav-button"
-                  onClick={() => {
-                    setShowCharacters((prev) => {
-                      const next = !prev
-                      if (next) {
-                        window.requestAnimationFrame(() => {
-                          document.getElementById('characters')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                        })
-                      }
-                      return next
-                    })
-                    setMobileNavOpen(false)
-                  }}
-                >
-                  {showCharacters ? "Hide Characters" : "Characters"}
-                </button>
-              ) : item.label === "Houses" ? (
-                <button
-                  type="button"
-                  className="got-nav-button"
-                  onClick={() => {
-                    setShowHouses((prev) => {
-                      const next = !prev
-                      if (next) {
-                        window.requestAnimationFrame(() => {
-                          document.getElementById('houses')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                        })
-                      }
-                      return next
-                    })
-                    setMobileNavOpen(false)
-                  }}
-                >
-                  {showHouses ? "Hide Houses" : "Houses"}
-                </button>
-              ) : item.label === "The World" ? (
-                <button
-                  type="button"
-                  className="got-nav-button"
-                  onClick={() => {
-                    setShowWorld((prev) => {
-                      const next = !prev
-                      if (next) {
-                        window.requestAnimationFrame(() => {
-                          document.getElementById('world')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                        })
-                      }
-                      return next
-                    })
-                    setMobileNavOpen(false)
-                  }}
-                >
-                  {showWorld ? "Hide The World" : "The World"}
-                </button>
-              ) : item.label === "History" ? (
-                <button
-                  type="button"
-                  className="got-nav-button"
-                  onClick={() => {
-                    setShowHistory((prev) => {
-                      const next = !prev
-                      if (next) {
-                        window.requestAnimationFrame(() => {
-                          document.getElementById('history')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                        })
-                      }
-                      return next
-                    })
-                    setMobileNavOpen(false)
-                  }}
-                >
-                  {showHistory ? "Hide History" : "History"}
-                </button>
-              ) : (
-                <a href={item.href} onClick={() => setMobileNavOpen(false)}>
-                  {item.label}
-                </a>
-              )}
+              <button
+                type="button"
+                className={`got-nav-button ${item.active ? "is-active" : ""}`}
+                aria-pressed={item.active}
+                onClick={() => {
+                  item.setActive((prev) => {
+                    const next = !prev
+                    if (next) {
+                      window.requestAnimationFrame(() => {
+                        // The section we're about to scroll to just mounted,
+                        // growing the page height. Lenis caches its scroll
+                        // limit and only recalculates it on a debounced
+                        // resize observer, so force a sync recalc here —
+                        // otherwise scrollTo clamps against the page's old,
+                        // shorter height and stops short of the section.
+                        lenis.resize()
+                        lenis.scrollTo(`#${item.id}`)
+                      })
+                    }
+                    return next
+                  })
+                  setMobileNavOpen(false)
+                }}
+              >
+                <span className="got-nav-dot" aria-hidden="true" />
+                {item.label}
+              </button>
             </li>
           ))}
         </ul>
@@ -642,10 +594,7 @@ const WesterosChronicles = ({
                 type="button"
                 className="got-cta-btn"
                 onClick={() => {
-                  window.scrollBy({
-                    top: window.innerHeight * 0.85,
-                    behavior: 'smooth',
-                  })
+                  lenis.scrollTo(window.scrollY + window.innerHeight * 0.85)
                 }}
               >
                 Begin the Journey
@@ -656,7 +605,8 @@ const WesterosChronicles = ({
                 onClick={() => {
                   setShowHouses(true)
                   window.requestAnimationFrame(() => {
-                    document.getElementById('houses')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                    lenis.resize()
+                    lenis.scrollTo('#houses')
                   })
                 }}
               >

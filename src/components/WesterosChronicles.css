@@ -346,16 +346,48 @@ body {
   text-orientation: mixed;
 }
 .got-nav-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     background: transparent;
     border: none;
-    color: inherit;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ash);
     cursor: pointer;
-    font: inherit;
     padding: 0;
+    transition: color 0.3s;
 }
 
 .got-nav-button:hover {
-    color: #c9a84c;
+    color: var(--gold-light);
+}
+
+.got-nav-button.is-active {
+    color: var(--gold-light);
+}
+
+/* Toggle indicator: hollow when a section is hidden, lit when shown */
+.got-nav-dot {
+    width: 5px;
+    height: 5px;
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid var(--gold-dim);
+    transform: rotate(45deg);
+    transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.got-nav-button:hover .got-nav-dot {
+    border-color: var(--gold-light);
+}
+
+.got-nav-button.is-active .got-nav-dot {
+    background: var(--gold);
+    border-color: var(--gold);
+    box-shadow: 0 0 6px rgba(201, 168, 76, 0.8);
 }
 .got-vert-line {
   width: 1px;

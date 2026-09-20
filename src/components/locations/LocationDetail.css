@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@500;600&display=swap');
+
+.location-title {
+  font-family: 'Cinzel Decorative', serif;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.9);
+}
+
+.location-label {
+  font-family: 'Cinzel', serif;
+}
+
+/* ── Cinematic entrance: fade + slight zoom, standing in for a full
+   map → detail page transition without pulling in a transitions library ── */
+@keyframes location-page-in {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.location-page-enter {
+  animation: location-page-in 0.5s ease-out;
+}
+
+@keyframes location-fact-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.location-fact {
+  animation: location-fact-in 0.4s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .location-page-enter,
+  .location-fact {
+    animation: none;
+  }
+}
