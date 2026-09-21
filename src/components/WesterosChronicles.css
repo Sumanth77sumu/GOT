@@ -37,6 +37,7 @@ body {
 .got-container {
   position: relative;
   width: 100%;
+  background: #000;
   /* height is set inline via JS (scrollHeight) */
 }
 
