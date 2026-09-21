@@ -464,7 +464,20 @@ const WesterosChronicles = ({
       { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out', stagger: 0.1, delay: 0.3 },
     )
 
+    // Mobile Safari's address bar is still animating into its settled state
+    // right after load, so the very first `window.innerHeight` read (used by
+    // getScrollHeight above) can be smaller or larger than the height the
+    // page actually ends up with. Since ignoreMobileResize keeps ScrollTrigger
+    // from auto-recalculating on that settle (by design, to avoid thrashing
+    // mid-scroll), do one explicit, one-time refresh shortly after mount to
+    // pick up the settled height — otherwise the pinned hero can release
+    // early/late, leaving a visible gap before the next section.
+    const settleRefreshTimer = window.setTimeout(() => {
+      ScrollTrigger.refresh()
+    }, 500)
+
     return () => {
+      window.clearTimeout(settleRefreshTimer)
       if (scrollStopTimer) window.clearTimeout(scrollStopTimer)
       storyTrigger.kill()
       pinTrigger.kill()
