@@ -3,18 +3,13 @@
 :root {
   color-scheme: dark;
   font-family: Inter, system-ui, sans-serif;
-  background: #000;
+  background: #0f172a;
 }
 
 html, body, #root {
   min-height: 100vh;
   margin: 0;
-  /* Plain black, matching every section's own theme. This is the color
-     that shows through any gap between sections (e.g. a mobile browser's
-     rubber-band overscroll, or while a section is still mounting) — it
-     used to be the default Vite/Tailwind scaffold navy (#0f172a), which
-     never matched this site's black/gold theme and stood out badly
-     whenever it became visible. */
-  background: #000;
+  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.12), transparent 35%),
+              linear-gradient(180deg, #020617 0%, #0f172a 100%);
   color: #e2e8f0;
 }

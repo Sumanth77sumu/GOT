@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=IM+Fell+English:ital@0;1&display=swap');
 
-/* Tailwind's own preflight (loaded via index.css) already resets
-   box-sizing/margin/padding on *,::before,::after inside @layer base.
-   A duplicate, unlayered copy used to live here — being unlayered, it
-   unconditionally beat every Tailwind utility class for margin/padding
-   site-wide (unlayered styles always win over layered ones, regardless
-   of specificity), which is why things like px-6/pr-4 were silently
-   getting zeroed out on some elements across the app. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 :root {
   --gold:       #c9a84c;
@@ -37,7 +37,6 @@ body {
 .got-container {
   position: relative;
   width: 100%;
-  background: #000;
   /* height is set inline via JS (scrollHeight) */
 }
 
